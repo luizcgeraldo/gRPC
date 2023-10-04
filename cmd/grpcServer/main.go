@@ -1,24 +1,31 @@
 package main
 
-import database (
+import (
 	"database/sql"
+	"net"
 
 	"github.com/luizcgeraldo/gRPC/internal/database"
+	"github.com/luizcgeraldo/gRPC/internal/pb"
+	"github.com/luizcgeraldo/gRPC/internal/service"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
-
 func main() {
-	db, err :=  sql.Open("sqlite3", "./db.sqlite3")	
+	db, err := sql.Open("sqlite3", "./db.sqlite")
 	if err != nil {
 		panic(err)
 	}
-	defer db.close()
+	defer db.Close()
 
 	categoryDb := database.NewCategory(db)
 	categoryService := service.NewCategoryService(*categoryDb)
 
 	grpcServer := grpc.NewServer()
 	pb.RegisterCategoryServiceServer(grpcServer, categoryService)
+	reflection.Register(grpcServer)
 
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {

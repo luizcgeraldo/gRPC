@@ -2,6 +2,7 @@ syntax = "proto3";
 package pb;
 option go_package = "internal/pb";
 
+message blank{}
 
 message Category {
     string id = 1;
@@ -20,4 +21,12 @@ message CategoryResponse {
 
 service CategoryService {
     rpc CreateCategory(CreateCategoryRequest) returns (CategoryResponse) {}
+}
+
+service CategoryService {
+    rpc CreateCategory(CreateCategoryRequest) returns (Category) {}
+    rpc CreateCategoryStream(stream CreateCategoryRequest) returns (CategoryList) {}
+    rpc CreateCategoryStreamBidirectional(stream CreateCategoryRequest) returns (stream Category) {}
+    rpc ListCategories(blank) returns (CategoryList) {}
+    rpc GetCategory(CategoryGetRequest) returns (Category) {}
 }
